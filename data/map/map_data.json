@@ -1,0 +1,54 @@
+{
+    "de_ancient": {
+        "pos_x": -2953.0,
+        "pos_y": 2164.0,
+        "scale": 5.0
+    },
+    "de_anubis": {
+        "pos_x": -2796.0,
+        "pos_y": 3328.0,
+        "scale": 5.22
+    },
+    "de_cache": {
+        "pos_x": -2000.0,
+        "pos_y": 3250.0,
+        "scale": 5.5
+    },
+    "de_dust2": {
+        "pos_x": -2476.0,
+        "pos_y": 3239.0,
+        "scale": 4.4
+    },
+    "de_inferno": {
+        "pos_x": -2087.0,
+        "pos_y": 3870.0,
+        "scale": 4.9
+    },
+    "de_mirage": {
+        "pos_x": -3230.0,
+        "pos_y": 1713.0,
+        "scale": 5.0
+    },
+    "de_nuke": {
+        "pos_x": -3453.0,
+        "pos_y": 2887.0,
+        "scale": 7.0,
+        "z_cutoff": -495
+    },
+    "de_overpass": {
+        "pos_x": -4831.0,
+        "pos_y": 1781.0,
+        "scale": 5.2
+    },
+    "de_train": {
+        "pos_x": -2477.0,
+        "pos_y": 2392.0,
+        "scale": 4.7
+    },
+    "de_vertigo": {
+        "pos_x": -3168.0,
+        "pos_y": 1762.0,
+        "scale": 4.0,
+        "z_cutoff": 11700
+    }
+}

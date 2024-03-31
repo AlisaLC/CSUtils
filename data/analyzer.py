@@ -4,9 +4,20 @@ from demoparser2 import DemoParser
 class DemoAnalyzer:
     def __init__(self, demo_file):
         self.parser = DemoParser(demo_file)
+
         self.map_name = self.parser.parse_header()['map_name']
-        self.player_info = self.parser.parse_player_info()
-        self.player_info.set_index('steamid', inplace=True)
+
+        self.player_info = self.parser.parse_player_info().set_index('steamid')
+
+        self.tick_to_round = self.parser.parse_ticks(
+            ["total_rounds_played"]
+        ).groupby(
+            ['total_rounds_played'], as_index=False
+        ).agg(
+            first_tick=('tick', 'first'),
+            last_tick=('tick', 'last'),
+        )
+
         self.grenades = self.__parse_grenades()
 
     def __parse_grenades(self):
@@ -35,4 +46,7 @@ class DemoAnalyzer:
             'first_Z', 'last_Z',
             'thrower_steamid'
         ]]
+        grenades['round'] = grenades['first_tick'].apply(
+            lambda x: self.tick_to_round[self.tick_to_round['first_tick'] < x]['total_rounds_played'].max() + 1
+        )
         return grenades

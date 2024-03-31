@@ -85,17 +85,17 @@ def extract_map_url(f):
 def download_map(url, filename):
     response = requests.get(url, stream=True)
     file_size = int(response.headers.get('content-length', 0))
-    with open(f'maps/{filename}', 'wb') as f:
+    with open(f'demos/{filename}', 'wb') as f:
         with tqdm(total=file_size, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
             for data in response.iter_content(chunk_size=1024):
                 f.write(data)
                 pbar.update(len(data))
-    with open(f'maps/{filename[:-4]}', 'wb') as wf:
-        rf = bz2.BZ2File(f'maps/{filename}', 'rb')
+    with open(f'demos/{filename[:-4]}', 'wb') as wf:
+        rf = bz2.BZ2File(f'demos/{filename}', 'rb')
         data = rf.read()
         wf.write(data)
         rf.close()
-    os.remove(f'maps/{filename}')
+    os.remove(f'demos/{filename}')
 
 
 if __name__ == '__main__':
@@ -108,7 +108,7 @@ if __name__ == '__main__':
     with open('data.info', 'rb') as f:
         url = extract_map_url(f)
         filename = url.split('/')[-1]
-        if os.path.exists(f'maps/{filename[:-4]}'):
+        if os.path.exists(f'demos/{filename[:-4]}'):
             print(f'Map already downloaded: {filename}')
         else:
             download_map(url, filename)

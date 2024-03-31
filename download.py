@@ -85,6 +85,7 @@ def extract_map_url(f):
 def download_map(url, filename):
     response = requests.get(url, stream=True)
     file_size = int(response.headers.get('content-length', 0))
+    os.makedirs('demos', exist_ok=True)
     with open(f'demos/{filename}', 'wb') as f:
         with tqdm(total=file_size, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
             for data in response.iter_content(chunk_size=1024):

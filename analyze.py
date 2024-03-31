@@ -1,3 +1,4 @@
+import os
 import argparse
 from data import DemoAnalyzer, plot_grenades
 import matplotlib.pyplot as plt
@@ -10,6 +11,7 @@ if __name__ == '__main__':
     parser = DemoAnalyzer(args.demo_file)
     print(f'MAP: {parser.map_name}')
     print(f'PLAYERS: {parser.player_info}')
+    os.makedirs('results', exist_ok=True)
     parser.grenades.to_csv('results/grenades.csv', index=False)
     for round in parser.grenades['round'].unique():
         fig, ax = plot_grenades(

@@ -105,7 +105,6 @@ def download_map(url, filename):
             for data in response.iter_content(chunk_size=1024):
                 f.write(data)
                 pbar.update(len(data))
-    # unzip the file
     with open(f'maps/{filename[:-4]}', 'wb') as wf:
         rf = bz2.BZ2File(f'maps/{filename}', 'rb')
         data = rf.read()
@@ -127,3 +126,4 @@ if __name__ == '__main__':
         else:
             download_map(url, filename)
             print(f'Map downloaded: {filename}')
+    os.remove('data.info')

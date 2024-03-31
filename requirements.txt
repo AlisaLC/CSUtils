@@ -1,1 +1,5 @@
-awpy
+demoparser2
+requests
+tqdm
+argparse
+python-dotenv

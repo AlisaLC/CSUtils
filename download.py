@@ -3,6 +3,8 @@ from typing import NamedTuple
 
 import argparse
 import subprocess
+import os
+import bz2
 
 import requests
 from tqdm import tqdm
@@ -84,24 +86,44 @@ def decode_match_share_code(share_code: str):
     tv_port = bytes_to_bigint(bytes_list[16:18][::-1])
     return MatchInformation(match_id, reservation_id, tv_port)
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Download CS2 Demo from a share code')
-    parser.add_argument('share_code', type=str, help='CS2 Demo share code')
-    args = parser.parse_args()
-    share_code = args.share_code
+def extract_match_data(decode_match_share_code, share_code):
     cmd = f'boiler\\boiler-writter.exe data.info {decode_match_share_code(share_code)}'
     subprocess.run(cmd, shell=True)
+
+def extract_map_url(f):
+    data = f.read()
+    match_list = csgo_pb.CMsgGCCStrike15_v2_MatchList()
+    match_list.ParseFromString(data)
+    url = match_list.matches[0].roundstatsall[-1].map
+    return url
+
+def download_map(url, filename):
+    response = requests.get(url, stream=True)
+    file_size = int(response.headers.get('content-length', 0))
+    with open(f'maps/{filename}', 'wb') as f:
+        with tqdm(total=file_size, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
+            for data in response.iter_content(chunk_size=1024):
+                f.write(data)
+                pbar.update(len(data))
+    # unzip the file
+    with open(f'maps/{filename[:-4]}', 'wb') as wf:
+        rf = bz2.BZ2File(f'maps/{filename}', 'rb')
+        data = rf.read()
+        wf.write(data)
+        rf.close()
+    os.remove(f'maps/{filename}')
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Download CS2 demo from a share code')
+    parser.add_argument('share_code', type=str, help='CS2 demo share code')
+    args = parser.parse_args()
+    share_code = args.share_code
+    extract_match_data(decode_match_share_code, share_code)
     with open('data.info', 'rb') as f:
-        data = f.read()
-        match_list = csgo_pb.CMsgGCCStrike15_v2_MatchList()
-        match_list.ParseFromString(data)
-        url = match_list.matches[0].roundstatsall[-1].map
-        response = requests.get(url, stream=True)
-        file_size = int(response.headers.get('content-length', 0))
+        url = extract_map_url(f)
         filename = url.split('/')[-1]
-        with open(f'maps/{filename}', 'wb') as f:
-            with tqdm(total=file_size, unit='B', unit_scale=True, unit_divisor=1024) as pbar:
-                for data in response.iter_content(chunk_size=1024):
-                    f.write(data)
-                    pbar.update(len(data))
-        print(f'Map downloaded: {filename}')
+        if os.path.exists(f'maps/{filename[:-4]}'):
+            print(f'Map already downloaded: {filename}')
+        else:
+            download_map(url, filename)
+            print(f'Map downloaded: {filename}')
